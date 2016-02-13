@@ -13,8 +13,15 @@ import SwiftyJSON
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
     
+    //webView http://daichi.x0.com/hackday/index.html
+    
     //UUIDからNSUUIDを作成
-    let proximityUUID = NSUUID(UUIDString:"f8bfbb6e-2be5-4052-a8e2-acd921e43647")
+    let proximityUUID = NSUUID(UUIDString:"5f5bbfe6-5644-423a-b3db-58d29a34b315")
+    
+    //f8bfbb6e-2be5-4052-a8e2-acd921e43647 panda
+    //ee9eaf8e-9620-4d74-9e23-1cb5f3e587fb mineruva
+    //5f5bbfe6-5644-423a-b3db-58d29a34b315 rikuo
+    
     
     var testRegion = CLBeaconRegion()
     
@@ -119,6 +126,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         ]
         
         let request = NSURL(string: "http://160.16.107.203:4000/api/location").flatMap(NSMutableURLRequest.init)
+        
         request?.HTTPMethod = "POST"
         request?.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
