@@ -15,16 +15,18 @@ import SwiftyJSON
 class ViewController: UIViewController, CLLocationManagerDelegate, UIWebViewDelegate {
     //webView http://daichi.x0.com/hackday/index.html
     
-    //UUIDからNSUUIDを作成
-    let proximityUUID = NSUUID(UUIDString:"ee9eaf8e-9620-4d74-9e23-1cb5f3e587fb")
-
-    
     //f8bfbb6e-2be5-4052-a8e2-acd921e43647 panda
     //ee9eaf8e-9620-4d74-9e23-1cb5f3e587fb mineruva
     //5f5bbfe6-5644-423a-b3db-58d29a34b315 rikuo
     
+    let UUIDStrings = [
+        "f8bfbb6e-2be5-4052-a8e2-acd921e43647",
+        "ee9eaf8e-9620-4d74-9e23-1cb5f3e587fb",
+        "5f5bbfe6-5644-423a-b3db-58d29a34b315"
+    ]
     
-    var testRegion = CLBeaconRegion()
+    
+    var regions: [CLBeaconRegion] = []
     
     
     let manager = CLLocationManager()
@@ -46,20 +48,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UIWebViewDele
         guard CLLocationManager.isMonitoringAvailableForClass(CLBeaconRegion) else { return }
         guard CLLocationManager.isRangingAvailable() else { return }
         
-        testRegion = CLBeaconRegion(proximityUUID: proximityUUID!, identifier:"EstimoteRegion") //ここで落ちたらUUIDがカス
-        testRegion.notifyOnEntry = true
-        testRegion.notifyOnExit = true
-        testRegion.notifyEntryStateOnDisplay = true
+        regions = UUIDStrings.flatMap(NSUUID.init)
+                             .enumerate()
+                             .map { CLBeaconRegion(proximityUUID: $0.1, identifier: "\($0.0)") }
+        
         
         self.manager.delegate = self
         
-        /*
-        位置情報サービスへの認証状態を取得する
-        NotDetermined   --  アプリ起動後、位置情報サービスへのアクセスを許可するかまだ選択されていない状態
-        Restricted      --  設定 > 一般 > 機能制限により位置情報サービスの利用が制限中
-        Denied          --  ユーザーがこのアプリでの位置情報サービスへのアクセスを許可していない
-        Authorized      --  位置情報サービスへのアクセスを許可している
-        */
+
         
     }
     func locationManager(manager: CLLocationManager, didStartMonitoringForRegion region: CLRegion) {
@@ -99,11 +95,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UIWebViewDele
     }
     
     func locationManager(manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], inRegion region: CLBeaconRegion) {
-        //print(beacons)
         
         if beacons.isEmpty { return }
         
-        let beacon = beacons[0]
         
         /*
         beaconから取得できるデータ
@@ -115,28 +109,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UIWebViewDele
         rssi            :   電波強度
         */
         
-        switch beacon.proximity {
-        case .Immediate:
-            print("Immediate")
-        case .Near:
-            print("Near")
-        case .Far:
-            print("Far")
-        case .Unknown:
-            print("Unknown")
-        }
-        print(beacon.proximityUUID.UUIDString)
-        print("\(beacon.major)")
-        print("\(beacon.minor)")
-        print("\(beacon.accuracy)")
-        print("\(beacon.rssi)")
-        
         let params = [
-            "beacons": [
-                [ "uuid": "ee9eaf8e-9620-4d74-9e23-1cb5f3e587fb" , "rssi": -70 ],
-                [ "uuid": "f8bfbb6e-2be5-4052-a8e2-acd921e43647" , "rssi": -30 ]
-            ]
+            "beacons": beacons.map { beacon in
+                [ "uuid": beacon.proximityUUID.UUIDString, "rrsi": beacon.rssi ]
+            }
         ]
+        
+        print(JSON(params))
         
         Alamofire.request(.POST, "http://160.16.107.203:4000/api/location", parameters: params, encoding: .JSON).validate().responseJSON { res in
             switch res.result {
@@ -162,14 +141,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UIWebViewDele
         case .Authorized, .AuthorizedWhenInUse:
             
             print("許可")
-            self.manager.startMonitoringForRegion(testRegion)
+            regions.forEach { self.manager.startMonitoringForRegion($0) }
         case .NotDetermined:
             
             print("きいてみる")
             if(UIDevice.currentDevice().systemVersion as NSString ).intValue >= 8 {
                 self.manager.requestAlwaysAuthorization()
             }else{
-                self.manager.startMonitoringForRegion(testRegion)
+                regions.forEach { self.manager.startMonitoringForRegion($0) }
             }
         case .Restricted, .Denied:
             
