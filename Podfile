@@ -4,8 +4,8 @@ platform :ios, '8.0'
 use_frameworks!
 
 target 'iBeaconDemo' do
-  pod 'Alamofire'
-  pod 'SwiftyJSON'
+  pod 'Alamofire', '~> 3.1.3'
+  pod 'SwiftyJSON', '~> 2.3.2'
 end
 
 target 'iBeaconDemoTests' do

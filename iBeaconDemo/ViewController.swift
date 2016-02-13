@@ -11,13 +11,13 @@ import CoreLocation
 import Alamofire
 import SwiftyJSON
 
+
 class ViewController: UIViewController, CLLocationManagerDelegate, UIWebViewDelegate {
-    
     //webView http://daichi.x0.com/hackday/index.html
     
     //UUIDからNSUUIDを作成
-    let proximityUUID = NSUUID(UUIDString:"f8bfbb6e-2be5-4052-a8e2-acd921e43647")
-    let pUUID = NSUUID(UUIDString: "ee9eaf8e-9620-4d74-9e23-1cb5f3e587fb")
+    let proximityUUID = NSUUID(UUIDString:"ee9eaf8e-9620-4d74-9e23-1cb5f3e587fb")
+
     
     //f8bfbb6e-2be5-4052-a8e2-acd921e43647 panda
     //ee9eaf8e-9620-4d74-9e23-1cb5f3e587fb mineruva
@@ -133,22 +133,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate, UIWebViewDele
         
         let params = [
             "beacons": [
-                [ "uuid": beacon.proximityUUID.UUIDString , "rssi": beacon.rssi ],
-                [ "uuid": beacon.proximityUUID.UUIDString , "rssi": beacon.rssi ]
+                [ "uuid": "ee9eaf8e-9620-4d74-9e23-1cb5f3e587fb" , "rssi": -70 ],
+                [ "uuid": "f8bfbb6e-2be5-4052-a8e2-acd921e43647" , "rssi": -30 ]
             ]
         ]
         
-        let request = NSURL(string: "http://160.16.107.203:4000/api/location").flatMap(NSMutableURLRequest.init)
-        
-        request?.HTTPMethod = "POST"
-        request?.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let paramJSON: NSData? = try? JSON(params).rawData()
-        
-        paramJSON.map { request?.HTTPBody = $0 }
-        
-        guard let _request = request else { return }
-        Alamofire.request(_request).validate().responseJSON { res in
+        Alamofire.request(.POST, "http://160.16.107.203:4000/api/location", parameters: params, encoding: .JSON).validate().responseJSON { res in
             switch res.result {
             case .Success(let value):
                 let json = JSON(value)
