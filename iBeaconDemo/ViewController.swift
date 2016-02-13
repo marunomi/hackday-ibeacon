@@ -11,12 +11,13 @@ import CoreLocation
 import Alamofire
 import SwiftyJSON
 
-class ViewController: UIViewController, CLLocationManagerDelegate {
+class ViewController: UIViewController, CLLocationManagerDelegate, UIWebViewDelegate {
     
     //webView http://daichi.x0.com/hackday/index.html
     
     //UUIDからNSUUIDを作成
-    let proximityUUID = NSUUID(UUIDString:"5f5bbfe6-5644-423a-b3db-58d29a34b315")
+    let proximityUUID = NSUUID(UUIDString:"f8bfbb6e-2be5-4052-a8e2-acd921e43647")
+    let pUUID = NSUUID(UUIDString: "ee9eaf8e-9620-4d74-9e23-1cb5f3e587fb")
     
     //f8bfbb6e-2be5-4052-a8e2-acd921e43647 panda
     //ee9eaf8e-9620-4d74-9e23-1cb5f3e587fb mineruva
@@ -25,11 +26,23 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     
     var testRegion = CLBeaconRegion()
     
+    
     let manager = CLLocationManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //WebView 
+        let myWebView : UIWebView = UIWebView()
+        myWebView.delegate = self
+        myWebView.frame = self.view.bounds
+        self.view.addSubview(myWebView)
+        let url: NSURL = NSURL(string: "http://daichi.x0.com/hackday/index.html")!
+        let request: NSURLRequest = NSURLRequest(URL: url)
+        myWebView.loadRequest(request)
+        
         // Do any additional setup after loading the view, typically from a nib.
+        
         guard CLLocationManager.isMonitoringAvailableForClass(CLBeaconRegion) else { return }
         guard CLLocationManager.isRangingAvailable() else { return }
         
