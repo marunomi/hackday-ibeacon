@@ -10,9 +10,9 @@
 		15D73C2369CBDE98E3B80D64 /* Pods_iBeaconDemoUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F75B4306D25DDF731EB384C /* Pods_iBeaconDemoUITests.framework */; };
 		B7B0CCEAF54AA22C9C6A6F7E /* Pods_iBeaconDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FABD97007B841D75053D734 /* Pods_iBeaconDemo.framework */; };
 		D7A0882F95401A94990603A3 /* Pods_iBeaconDemoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 38477C86287B035F9A27FF58 /* Pods_iBeaconDemoTests.framework */; };
+		EFBAFA6A1C6F242C0088A49D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EFBAFA691C6F242C0088A49D /* Main.storyboard */; };
 		EFD95B5A1C6EC13F002CCF3F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD95B591C6EC13F002CCF3F /* AppDelegate.swift */; };
 		EFD95B5C1C6EC13F002CCF3F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFD95B5B1C6EC13F002CCF3F /* ViewController.swift */; };
-		EFD95B5F1C6EC13F002CCF3F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EFD95B5D1C6EC13F002CCF3F /* Main.storyboard */; };
 		EFD95B621C6EC13F002CCF3F /* iBeaconDemo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EFD95B601C6EC13F002CCF3F /* iBeaconDemo.xcdatamodeld */; };
 		EFD95B641C6EC13F002CCF3F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EFD95B631C6EC13F002CCF3F /* Assets.xcassets */; };
 		EFD95B671C6EC13F002CCF3F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EFD95B651C6EC13F002CCF3F /* LaunchScreen.storyboard */; };
@@ -47,10 +47,10 @@
 		A1BC563CF3E658641C62604D /* Pods-iBeaconDemoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iBeaconDemoTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-iBeaconDemoTests/Pods-iBeaconDemoTests.release.xcconfig"; sourceTree = "<group>"; };
 		A264B877F4381878583308F9 /* Pods-iBeaconDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iBeaconDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-iBeaconDemo/Pods-iBeaconDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		E2DA8E0FABD246E0589E7817 /* Pods-iBeaconDemoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iBeaconDemoUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-iBeaconDemoUITests/Pods-iBeaconDemoUITests.release.xcconfig"; sourceTree = "<group>"; };
+		EFBAFA691C6F242C0088A49D /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = ../../../Main.storyboard; sourceTree = "<group>"; };
 		EFD95B561C6EC13F002CCF3F /* iBeaconDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iBeaconDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFD95B591C6EC13F002CCF3F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EFD95B5B1C6EC13F002CCF3F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		EFD95B5E1C6EC13F002CCF3F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		EFD95B611C6EC13F002CCF3F /* iBeaconDemo.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = iBeaconDemo.xcdatamodel; sourceTree = "<group>"; };
 		EFD95B631C6EC13F002CCF3F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EFD95B661C6EC13F002CCF3F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -141,7 +141,7 @@
 			children = (
 				EFD95B591C6EC13F002CCF3F /* AppDelegate.swift */,
 				EFD95B5B1C6EC13F002CCF3F /* ViewController.swift */,
-				EFD95B5D1C6EC13F002CCF3F /* Main.storyboard */,
+				EFBAFA691C6F242C0088A49D /* Main.storyboard */,
 				EFD95B631C6EC13F002CCF3F /* Assets.xcassets */,
 				EFD95B651C6EC13F002CCF3F /* LaunchScreen.storyboard */,
 				EFD95B681C6EC13F002CCF3F /* Info.plist */,
@@ -287,7 +287,7 @@
 			files = (
 				EFD95B671C6EC13F002CCF3F /* LaunchScreen.storyboard in Resources */,
 				EFD95B641C6EC13F002CCF3F /* Assets.xcassets in Resources */,
-				EFD95B5F1C6EC13F002CCF3F /* Main.storyboard in Resources */,
+				EFBAFA6A1C6F242C0088A49D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,14 +473,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		EFD95B5D1C6EC13F002CCF3F /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				EFD95B5E1C6EC13F002CCF3F /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		EFD95B651C6EC13F002CCF3F /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

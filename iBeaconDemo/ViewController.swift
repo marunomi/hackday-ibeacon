@@ -8,11 +8,12 @@
 
 import UIKit
 import CoreLocation
+import Alamofire
+import SwiftyJSON
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
     
     //UUIDからNSUUIDを作成
-    //let proximityUUID = NSUUID(UUIDString:"ac4caa7a-3e7b-4442-b803-15b1acaae482")
     let proximityUUID = NSUUID(UUIDString:"f8bfbb6e-2be5-4052-a8e2-acd921e43647")
     
     var testRegion = CLBeaconRegion()
@@ -39,22 +40,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         Denied          --  ユーザーがこのアプリでの位置情報サービスへのアクセスを許可していない
         Authorized      --  位置情報サービスへのアクセスを許可している
         */
-//        switch CLLocationManager.authorizationStatus() {
-//        case .Authorized, .AuthorizedWhenInUse:
-//            print("許可")
-//            manager.startMonitoringForRegion(testRegion)
-//        case .NotDetermined:
-//            print("きいてみる")
-//            if(UIDevice.currentDevice().systemVersion as NSString ).intValue >= 8 {
-//                
-//                manager.requestAlwaysAuthorization()
-//            }else{
-//                
-//                manager.startMonitoringForRegion(testRegion)
-//            }
-//        case .Restricted, .Denied:
-//            print("拒否")
-//        }
         
     }
     func locationManager(manager: CLLocationManager, didStartMonitoringForRegion region: CLRegion) {
@@ -125,6 +110,33 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         print("\(beacon.minor)")
         print("\(beacon.accuracy)")
         print("\(beacon.rssi)")
+        
+        let params = [
+            "beacons": [
+                [ "uuid": beacon.proximityUUID.UUIDString , "rssi": beacon.rssi ],
+                [ "uuid": beacon.proximityUUID.UUIDString , "rssi": beacon.rssi ]
+            ]
+        ]
+        
+        let request = NSURL(string: "http://160.16.107.203:4000/api/location").flatMap(NSMutableURLRequest.init)
+        request?.HTTPMethod = "POST"
+        request?.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let paramJSON: NSData? = try? JSON(params).rawData()
+        
+        paramJSON.map { request?.HTTPBody = $0 }
+        
+        guard let _request = request else { return }
+        Alamofire.request(_request).validate().responseJSON { res in
+            switch res.result {
+            case .Success(let value):
+                let json = JSON(value)
+                print(json)
+                
+            case .Failure(let error):
+                print(error.description)
+            }
+        }
     }
     
     override func didReceiveMemoryWarning() {
