@@ -11,22 +11,21 @@ import CoreLocation
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
     
-    //UUIDカラNSUUIDを作成
+    //UUIDからNSUUIDを作成
     let proximityUUID = NSUUID(UUIDString:"ac4caa7a-3e7b-4442-b803-15b1acaae482")
-    var region  = CLBeaconRegion()
-    var manager = CLLocationManager()
+    var region = CLBeaconRegion()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         guard CLLocationManager.isMonitoringAvailableForClass(CLBeaconRegion) else { return }
+        guard CLLocationManager.isRangingAvailable() else { return }
         
-        
-        //CLBeaconRegionを生成
         region = CLBeaconRegion(proximityUUID: proximityUUID!, identifier:"EstimoteRegion") //ここで落ちたらUUIDがカス
         
-        //デリゲートの設定
+        let manager = CLLocationManager()
         manager.delegate = self
+        
         /*
         位置情報サービスへの認証状態を取得する
         NotDetermined   --  アプリ起動後、位置情報サービスへのアクセスを許可するかまだ選択されていない状態
@@ -36,55 +35,49 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         */
         switch CLLocationManager.authorizationStatus() {
         case .Authorized, .AuthorizedWhenInUse:
-            //iBeaconによる領域観測を開始する
-            print("観測開始")
-            //self.status.text = "Starting Monitor"
-            self.manager.startMonitoringForRegion(self.region)
+            print("許可")
+            manager.startMonitoringForRegion(region)
         case .NotDetermined:
-            print("許可承認")
-            //self.status.text = "Starting Monitor"
-            //デバイスに許可を促す
-//            self.manager.requestWhenInUseAuthorization()
-//            self.manager.startRangingBeaconsInRegion(self.region)
+            print("きいてみる")
 
             if(UIDevice.currentDevice().systemVersion as NSString ).intValue >= 8 {
-                //iOS8以降は許可をリクエストする関数をCallする
-                self.manager.requestAlwaysAuthorization()
+                manager.requestAlwaysAuthorization()
             }else{
-                self.manager.startMonitoringForRegion(self.region)
+                manager.startMonitoringForRegion(region)
             }
         case .Restricted, .Denied:
-            //デバイスから拒否状態
-            print("Restricted")
-            //self.status.text = "Restricted Monitor"
+            print("拒否")
         }
         
     }
     func locationManager(manager: CLLocationManager, didStartMonitoringForRegion region: CLRegion) {
+        print("境界判定 スタート")
         manager.requestStateForRegion(region)
-        //self.status.text = "Scanning..."
-        print("Scanning...")
     }
     
     func locationManager(manager: CLLocationManager, didDetermineState state: CLRegionState, forRegion inRegion: CLRegion) {
-        if (state == .Inside) {
-            //領域内にはいったときに距離測定を開始
-            manager.startRangingBeaconsInRegion(region)
+        switch state {
+        case .Inside:
+            print("inside")
+            manager.stopMonitoringForRegion(inRegion)
+            manager.startRangingBeaconsInRegion(inRegion as! CLBeaconRegion)
+        case .Outside:
+            print("outside")
+        case .Unknown:
+            print("unknown")
         }
     }
     
     func locationManager(manager: CLLocationManager, monitoringDidFailForRegion region: CLRegion?, withError error: NSError) {
-        print("monitoringDidFailForRegion \(error)")
-        //self.status.text = "Error :("
-        
+        print("monitoringDidFailForRegion \(error.description)")
     }
     
     func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
-        print("didFailWithError \(error)")
+        print("didFailWithError \(error.description)")
     }
     func locationManager(manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        manager.stopMonitoringForRegion(region)
         manager.startRangingBeaconsInRegion(region as! CLBeaconRegion)
-        //self.status.text = "Possible Match"
     }
     func locationManager(manager: CLLocationManager, didExitRegion region: CLRegion) {
         manager.stopRangingBeaconsInRegion(region as! CLBeaconRegion)
@@ -94,8 +87,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func locationManager(manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], inRegion region: CLBeaconRegion) {
         print(beacons)
         
-        if(beacons.count == 0) { return }
-        //複数あった場合は一番先頭のものを処理する
+        if beacons.isEmpty { return }
+        
         let beacon = beacons[0]
         
         /*
@@ -109,7 +102,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         */
         if (beacon.proximity == CLProximity.Unknown) {
             print("Unknown Proximity")
-            reset()
             return
         } else if (beacon.proximity == CLProximity.Immediate) {
             print("Immediate")
@@ -124,16 +116,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         print("\(beacon.minor)")
         print("\(beacon.accuracy)")
         print("\(beacon.rssi)")
-
-    }
-    
-    func reset(){
-        print("status:none")
-        print("uuid:none")
-        print("major:none")
-        print("minor:none")
-        print("accuracy:none")
-        print("rssi:none")
     }
     
     override func didReceiveMemoryWarning() {
@@ -146,27 +128,20 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
         switch CLLocationManager.authorizationStatus() {
         case .Authorized, .AuthorizedWhenInUse:
-            //iBeaconによる領域観測を開始する
-            print("観測開始")
-            //self.status.text = "Starting Monitor"
-            self.manager.startMonitoringForRegion(self.region)
-        case .NotDetermined:
-            print("許可承認")
-            //self.status.text = "Starting Monitor"
-            //デバイスに許可を促す
-            //            self.manager.requestWhenInUseAuthorization()
-            //            self.manager.startRangingBeaconsInRegion(self.region)
             
+            print("許可")
+            manager.startMonitoringForRegion(region)
+        case .NotDetermined:
+            
+            print("きいてみる")
             if(UIDevice.currentDevice().systemVersion as NSString ).intValue >= 8 {
-                //iOS8以降は許可をリクエストする関数をCallする
-                self.manager.requestWhenInUseAuthorization()
+                manager.requestWhenInUseAuthorization()
             }else{
-                self.manager.startMonitoringForRegion(self.region)
+                manager.startMonitoringForRegion(region)
             }
         case .Restricted, .Denied:
-            //デバイスから拒否状態
-            print("Restricted")
-            //self.status.text = "Restricted Monitor"
+            
+            print("拒否")
         }
     }
 }
