@@ -12,8 +12,12 @@ import CoreLocation
 class ViewController: UIViewController, CLLocationManagerDelegate {
     
     //UUIDからNSUUIDを作成
-    let proximityUUID = NSUUID(UUIDString:"ac4caa7a-3e7b-4442-b803-15b1acaae482")
-    var region = CLBeaconRegion()
+    //let proximityUUID = NSUUID(UUIDString:"ac4caa7a-3e7b-4442-b803-15b1acaae482")
+    let proximityUUID = NSUUID(UUIDString:"f8bfbb6e-2be5-4052-a8e2-acd921e43647")
+    
+    var testRegion = CLBeaconRegion()
+    
+    let manager = CLLocationManager()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,10 +25,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         guard CLLocationManager.isMonitoringAvailableForClass(CLBeaconRegion) else { return }
         guard CLLocationManager.isRangingAvailable() else { return }
         
-        region = CLBeaconRegion(proximityUUID: proximityUUID!, identifier:"EstimoteRegion") //ここで落ちたらUUIDがカス
+        testRegion = CLBeaconRegion(proximityUUID: proximityUUID!, identifier:"EstimoteRegion") //ここで落ちたらUUIDがカス
+        testRegion.notifyOnEntry = true
+        testRegion.notifyOnExit = true
+        testRegion.notifyEntryStateOnDisplay = true
         
-        let manager = CLLocationManager()
-        manager.delegate = self
+        self.manager.delegate = self
         
         /*
         位置情報サービスへの認証状態を取得する
@@ -33,36 +39,39 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         Denied          --  ユーザーがこのアプリでの位置情報サービスへのアクセスを許可していない
         Authorized      --  位置情報サービスへのアクセスを許可している
         */
-        switch CLLocationManager.authorizationStatus() {
-        case .Authorized, .AuthorizedWhenInUse:
-            print("許可")
-            manager.startMonitoringForRegion(region)
-        case .NotDetermined:
-            print("きいてみる")
-
-            if(UIDevice.currentDevice().systemVersion as NSString ).intValue >= 8 {
-                manager.requestAlwaysAuthorization()
-            }else{
-                manager.startMonitoringForRegion(region)
-            }
-        case .Restricted, .Denied:
-            print("拒否")
-        }
+//        switch CLLocationManager.authorizationStatus() {
+//        case .Authorized, .AuthorizedWhenInUse:
+//            print("許可")
+//            manager.startMonitoringForRegion(testRegion)
+//        case .NotDetermined:
+//            print("きいてみる")
+//            if(UIDevice.currentDevice().systemVersion as NSString ).intValue >= 8 {
+//                
+//                manager.requestAlwaysAuthorization()
+//            }else{
+//                
+//                manager.startMonitoringForRegion(testRegion)
+//            }
+//        case .Restricted, .Denied:
+//            print("拒否")
+//        }
         
     }
     func locationManager(manager: CLLocationManager, didStartMonitoringForRegion region: CLRegion) {
         print("境界判定 スタート")
-        manager.requestStateForRegion(region)
+        self.manager.requestStateForRegion(region)
     }
     
     func locationManager(manager: CLLocationManager, didDetermineState state: CLRegionState, forRegion inRegion: CLRegion) {
         switch state {
         case .Inside:
             print("inside")
-            manager.stopMonitoringForRegion(inRegion)
-            manager.startRangingBeaconsInRegion(inRegion as! CLBeaconRegion)
+            self.manager.stopMonitoringForRegion(inRegion)
+            self.manager.startRangingBeaconsInRegion(inRegion as! CLBeaconRegion)
         case .Outside:
             print("outside")
+            self.manager.stopRangingBeaconsInRegion(inRegion as! CLBeaconRegion)
+            self.manager.startMonitoringForRegion(inRegion)
         case .Unknown:
             print("unknown")
         }
@@ -76,16 +85,16 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         print("didFailWithError \(error.description)")
     }
     func locationManager(manager: CLLocationManager, didEnterRegion region: CLRegion) {
-        manager.stopMonitoringForRegion(region)
-        manager.startRangingBeaconsInRegion(region as! CLBeaconRegion)
+        self.manager.stopMonitoringForRegion(region)
+        self.manager.startRangingBeaconsInRegion(region as! CLBeaconRegion)
     }
     func locationManager(manager: CLLocationManager, didExitRegion region: CLRegion) {
-        manager.stopRangingBeaconsInRegion(region as! CLBeaconRegion)
-        manager.startMonitoringForRegion(region)
+        self.manager.stopRangingBeaconsInRegion(region as! CLBeaconRegion)
+        self.manager.startMonitoringForRegion(region)
     }
     
     func locationManager(manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], inRegion region: CLBeaconRegion) {
-        print(beacons)
+        //print(beacons)
         
         if beacons.isEmpty { return }
         
@@ -100,17 +109,17 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         accuracy        :   精度
         rssi            :   電波強度
         */
-        if (beacon.proximity == CLProximity.Unknown) {
-            print("Unknown Proximity")
-            return
-        } else if (beacon.proximity == CLProximity.Immediate) {
+        
+        switch beacon.proximity {
+        case .Immediate:
             print("Immediate")
-        } else if (beacon.proximity == CLProximity.Near) {
+        case .Near:
             print("Near")
-        } else if (beacon.proximity == CLProximity.Far) {
+        case .Far:
             print("Far")
+        case .Unknown:
+            print("Unknown")
         }
-        print("OK")
         print(beacon.proximityUUID.UUIDString)
         print("\(beacon.major)")
         print("\(beacon.minor)")
@@ -130,14 +139,14 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         case .Authorized, .AuthorizedWhenInUse:
             
             print("許可")
-            manager.startMonitoringForRegion(region)
+            self.manager.startMonitoringForRegion(testRegion)
         case .NotDetermined:
             
             print("きいてみる")
             if(UIDevice.currentDevice().systemVersion as NSString ).intValue >= 8 {
-                manager.requestWhenInUseAuthorization()
+                self.manager.requestAlwaysAuthorization()
             }else{
-                manager.startMonitoringForRegion(region)
+                self.manager.startMonitoringForRegion(testRegion)
             }
         case .Restricted, .Denied:
             
